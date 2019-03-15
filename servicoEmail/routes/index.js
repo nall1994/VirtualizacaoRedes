@@ -22,7 +22,8 @@ router.get('/', function(req, res, next) {
         dados = dados.data
         if(dados.message == 'OK') {
           var user = dados.user
-          res.render('index')
+          console.log(user)
+          res.render('index',{user:user})
         } else {
           // need authentication
           res.redirect('http://localhost:3001/needAuth')
@@ -40,7 +41,7 @@ router.get('/', function(req, res, next) {
         dados = dados.data
         if(dados.message == 'OK') {
           var user = dados.user
-          res.render('index');
+          res.render('index',{user:user});
         } else {
           //need authentication
           res.redirect('http://localhost:3001/needAuth')
