@@ -1,5 +1,8 @@
 version: '1'
+
+#Definir cada container#
 services:
+  #base de dados#
   db:
     image: mongo:3.0
     restart: always
@@ -8,12 +11,14 @@ services:
     networks: 
       - network1
   
+  #Servico de autorizacao#
   servicoAuth:
     image: bruno/servicoauth
     networks: 
       - network1
       - network2
   
+  #Servico de Email#
   servicoEmail:
     image: bruno/servicoemail
     restart: always
@@ -21,6 +26,7 @@ services:
       - network2
       - network3
   
+  #Servidor de Emails#
   servidorEmail:
     image:
     restart: always
