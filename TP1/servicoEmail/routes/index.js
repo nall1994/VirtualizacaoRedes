@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
     axiosConfig = {
       params: req.query
     }
-    axios.get('servicoAuth/users/checkToken',axiosConfig)
+    axios.get('http://localhost:3001/users/checkToken',axiosConfig)
       .then(dados => {
         dados = dados.data
         if(dados.message == 'OK') {
@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
           res.render('index',{user:user})
         } else {
           // need authentication
-          res.redirect('servicoAuth/needAuth')
+          res.redirect('http://localhost:3001/needAuth')
         }
       })
       .catch(error => res.render('error',{error:error, message: 'Ocorreu um erro ao verificar o token!'}))
@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
     axiosConfig = {
       params: req.query
     }
-    axios.get('servicoAuth/users/checkToken',axiosConfig)
+    axios.get('http://localhost:3001/users/checkToken',axiosConfig)
       .then(dados => {
         dados = dados.data
         if(dados.message == 'OK') {
@@ -45,13 +45,13 @@ router.get('/', function(req, res, next) {
           res.render('index',{user:user});
         } else {
           //need authentication
-          res.redirect('servicoAuth/needAuth')
+          res.redirect('http://localhost:3001/needAuth')
         }
       })
       .catch(error => res.render('error',{error: error, message: 'Ocorreu um erro ao verificar o token!'}))
   } else {
     //need authentication
-    res.redirect('servicoAuth/needAuth')
+    res.redirect('http://localhost:3001/needAuth')
   }
    
 });

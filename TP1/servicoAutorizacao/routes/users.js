@@ -27,7 +27,7 @@ router.post('/access', function(req, res, next) {
               .then(dados => {
                 console.log(access_token)
                 res.cookie('auth',access_token)
-                res.redirect('servicoEmail/?access_token=' + access_token)
+                res.redirect('http://localhost:3000/?access_token=' + access_token)
               })
               .catch(error => res.render('error',{error:error, message: 'Algo correu mal ao atualizar o token!'}))       
         } else {
