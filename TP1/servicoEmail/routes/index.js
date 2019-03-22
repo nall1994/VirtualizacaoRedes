@@ -67,6 +67,8 @@ router.post('/enviar',(req,res) => {
     port: 25
   })
 
+//Ver se a parte do envio de email está a funcionar!
+
   async () => {
     await s.connect()
     await s.greet({hostname: 'serviço de email'})
