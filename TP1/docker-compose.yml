@@ -12,7 +12,7 @@ services:
       - network1
   
   #Servico de autorizacao#
-  servicoAuth:
+  servicoauth:
     image: bruno/servicoauth
     ports: 
       - 3001:3001
@@ -21,7 +21,7 @@ services:
       - network2
   
   #Servico de Email#
-  servicoEmail:
+  servicoemail:
     image: bruno/servicoemail
     restart: always
     ports:
@@ -31,7 +31,7 @@ services:
       - network3
   
   #Servidor de Emails#
-  servidorEmail:
+  servidoremail:
     image: namshi/smtp
     restart: always
     networks:
