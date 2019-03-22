@@ -76,7 +76,7 @@ router.post('/enviar',(req,res) => {
     await s.quit()
   }
 
-  res.redirect('/index')
+  res.redirect('http://localhost:3000/')
 })
 
 module.exports = router;
