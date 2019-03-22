@@ -1,4 +1,4 @@
-version: '1'
+version: '2'
 
 #Definir cada container#
 services:
@@ -14,7 +14,8 @@ services:
   #Servico de autorizacao#
   servicoAuth:
     image: bruno/servicoauth
-    ports: 3001:3001
+    ports: 
+      - 3001:3001
     networks: 
       - network1
       - network2
@@ -23,7 +24,8 @@ services:
   servicoEmail:
     image: bruno/servicoemail
     restart: always
-    ports: 3000:3000
+    ports:
+      - 3000:3000
     networks:
       - network2
       - network3
@@ -35,7 +37,7 @@ services:
     networks:
       - network3
 
-network:
+networks:
   network1:
     driver: bridge
   network2:
