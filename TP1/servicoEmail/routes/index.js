@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
     axiosConfig = {
       params: req.query
     }
-    axios.get('tp1_servicoAuth_1/users/checkToken',axiosConfig)
+    axios.get('tp1_servicoAuth_1:3001/users/checkToken',axiosConfig)
       .then(dados => {
         dados = dados.data
         if(dados.message == 'OK') {
