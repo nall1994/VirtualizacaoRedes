@@ -7,13 +7,14 @@ services:
     image: mongo:3.0
     restart: always
     volumes:
-      - /tmp/mongodb:/data/db
+      - data-mongodb:/data/db
     networks: 
       - network1
   
   #Servico de autorizacao#
   servicoAuth:
     image: bruno/servicoauth
+    ports: 3001:3001
     networks: 
       - network1
       - network2
@@ -22,13 +23,14 @@ services:
   servicoEmail:
     image: bruno/servicoemail
     restart: always
+    ports: 3000:3000
     networks:
       - network2
       - network3
   
   #Servidor de Emails#
   servidorEmail:
-    image:
+    image: namshi/smtp
     restart: always
     networks:
       - network3
@@ -40,4 +42,8 @@ network:
     driver: bridge
   network3:
     driver: bridge
+
+volumes:
+  data-mongodb:
+    driver: local
   
