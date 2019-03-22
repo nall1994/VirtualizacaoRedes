@@ -15,7 +15,7 @@ services:
   servicoauth:
     image: bruno/servicoauth
     ports: 
-      - 3001:3001
+      - 3001:4001
     networks: 
       - network1
       - network2
@@ -25,7 +25,7 @@ services:
     image: bruno/servicoemail
     restart: always
     ports:
-      - 3000:3000
+      - 3000:4000
     networks:
       - network2
       - network3

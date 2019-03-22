@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
     axiosConfig = {
       params: req.query
     }
-    axios.get('http://localhost:3001/users/checkToken',axiosConfig)
+    axios.get('http://servicoauth:4001/users/checkToken',axiosConfig)
       .then(dados => {
         dados = dados.data
         if(dados.message == 'OK') {
@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
     axiosConfig = {
       params: req.query
     }
-    axios.get('http://localhost:3001/users/checkToken',axiosConfig)
+    axios.get('http://servicoauth:4001/users/checkToken',axiosConfig)
       .then(dados => {
         dados = dados.data
         if(dados.message == 'OK') {
