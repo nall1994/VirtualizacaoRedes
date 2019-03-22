@@ -10,7 +10,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-mongoose.connect('mongodb://127.0.0.1:27017/vrtp1',{useNewUrlParser:true})
+mongoose.connect('mongodb://tp1_db_1:27017/vrtp1',{useNewUrlParser:true})
   .then(() => console.log('Mongo Ready: ' + mongoose.connection.readyState))
   .catch(erro => console.log('erro de conexão: ' + erro))
 
