@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var axios = require('axios')
-var smtp_client = require('smtp-client')
+var nodemailer = require('nodemailer')
 
 /*
 Os pedidos internos como o /checkToken e o /needAuth devem comunicar diretamente com o container
@@ -60,25 +60,23 @@ router.post('/enviar',(req,res) => {
   var recetor = req.body.receiveremail
   var subject = req.body.subject
   var message = req.body.message
-  var data = subject + '\n' + message
 
-  s = new smtp_client.SMTPClient({
-    host: 'servidorEmail',
+  transport = nodemailer.createTransport({
+    host: 'tp1_servidorEmail_1',
     port: 25
   })
 
-//Ver se a parte do envio de email está a funcionar!
-
-  async () => {
-    await s.connect()
-    await s.greet({hostname: 'serviço de email'})
-    await s.mail({from: 'vr-5.gcom.di.uminho.pt'})
-    await s.rcpt({to: recetor})
-    await s.data(data)
-    await s.quit()
+  var message_send = {
+    from: 'nl@vr-5.gcom.di.uminho.pt',
+    to: recetor,
+    subject: subject,
+    text: message
   }
 
-  res.redirect('http://localhost:3000/')
+  transport.sendMail(message_send, info => {
+    res.redirect('http://localhost:3000/')
+  }) 
+
 })
 
 module.exports = router;
