@@ -14,8 +14,8 @@ services:
   #Servico de autorizacao#
   servicoauth:
     image: bruno/servicoauth
-    ports: 
-      - 3001:3001
+    expose:
+      - "3001"
     networks: 
       - network1
       - network2
@@ -25,8 +25,8 @@ services:
   servicoemail:
     image: bruno/servicoemail
     restart: always
-    ports:
-      - 3000:3000
+    expose:
+      - "3000"
     networks:
       - network2
       - network3
