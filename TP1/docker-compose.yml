@@ -14,34 +14,21 @@ services:
   #Servico de autorizacao#
   servicoauth:
     image: bruno/servicoauth
-    expose:
-      - "3001"
+    ports:
+      - 3001:3001
     networks: 
       - network1
       - network2
-      - network4
   
   #Servico de Email#
   servicoemail:
     image: bruno/servicoemail
     restart: always
-    expose:
-      - "3000"
+    ports:
+      - 3000:3000
     networks:
       - network2
       - network3
-      - network4
-  
-  #Proxy de acesso
-  proxy:
-    image: nginx:latest
-    restart: always
-    ports:
-      - 4000:80
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf 
-    networks:
-      - network4
   
   #Servidor de Emails#
   servidoremail:
@@ -56,8 +43,6 @@ networks:
   network2:
     driver: bridge
   network3:
-    driver: bridge
-  network4:
     driver: bridge
 
 volumes:
