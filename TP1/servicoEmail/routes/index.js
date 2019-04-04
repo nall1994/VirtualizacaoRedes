@@ -56,7 +56,7 @@ router.post('/enviar',(req,res) => {
   var message = req.body.message
 
   var transport = nodemailer.createTransport({
-    host: 'tp1_servidorEmail_1',
+    host: 'tp1_servidoremail_1',
     port: 25,
     secure: false
   })
