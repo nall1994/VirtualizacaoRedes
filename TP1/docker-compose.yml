@@ -13,7 +13,7 @@ services:
   
   #Servico de autorizacao#
   servicoauth:
-    image: bruno/servicoauth
+    image: nall1994/servicoauth
     ports:
       - 3001:3001
     networks: 
@@ -22,7 +22,7 @@ services:
   
   #Servico de Email#
   servicoemail:
-    image: bruno/servicoemail
+    image: nall1994/servicoemail
     restart: always
     ports:
       - 3000:3000
