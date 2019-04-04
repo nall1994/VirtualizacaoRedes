@@ -64,16 +64,12 @@ router.post('/enviar',(req,res) => {
   var transport = nodemailer.createTransport({
     host: 'tp1_servidorEmail_1',
     port: 25,
-    secure: false, // upgrade later with STARTTLS
-    auth: {
-      user: "username",
-      pass: "password"
-    }
+    secure: false
   })
 
   const mailOptions = {
-    from: 'no-reply@vrg5.gcom.di.uminho.pt',
-    to: 'bmfd.carvalho@gmail.com',
+    from: 'no-reply@vr-5.gcom.di.uminho.pt',
+    to: recetor,
     subject: subject,
     text: message
   };
