@@ -3,12 +3,6 @@ var router = express.Router();
 var axios = require('axios')
 var nodemailer = require('nodemailer')
 
-/*
-Os pedidos internos como o /checkToken e o /needAuth devem comunicar diretamente com o container
-posteriormente e não pelo localhost.
-Basicamente o localhost só deve escutar pedidos externos. Tudo o que seja troca de informação entre os dois
-deve ser feita utilizando os nomes dos containers pela rede interna.
-*/
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
