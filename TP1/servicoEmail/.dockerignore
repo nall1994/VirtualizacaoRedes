@@ -1,4 +1,4 @@
-TP1/servicoEmail/node_modules
-TP1/servicoEmail/npm-debug.log
-TP1/servicoEmail/Dockerfile
-TP1/servicoEmail/.dockerignore
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore

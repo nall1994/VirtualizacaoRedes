@@ -1,4 +1,4 @@
-TP1/servicoAutorizacao/node_modules
-TP1/servicoAutorizacao/npm-debug.log
-TP1/servicoAutorizacao/Dockerfile
-TP1/servicoAutorizacao/.dockerignore
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
