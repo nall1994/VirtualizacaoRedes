@@ -1,8 +1,8 @@
 FROM node:latest
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY TP1/servicoAutorizacao/package*.json ./
 RUN npm install
-COPY . .
+COPY TP1/servicoAutorizacao/* .
 EXPOSE 3001
 CMD [ "npm", "start" ]
