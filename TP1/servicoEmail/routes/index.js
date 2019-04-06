@@ -68,13 +68,6 @@ router.post('/enviar',(req,res) => {
     text: message
   };
 
-  var message_send = {
-    from: 'nl@vr-5.gcom.di.uminho.pt',
-    to: recetor,
-    subject: subject,
-    text: message
-  }
-
   transport.sendMail(mailOptions, function(error,info){
     if (error) {
       console.log(error);
