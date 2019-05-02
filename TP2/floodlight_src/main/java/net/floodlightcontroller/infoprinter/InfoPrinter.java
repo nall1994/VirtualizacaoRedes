@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.projectfloodlight.openflow.protocol.OFMessage;
 import org.projectfloodlight.openflow.protocol.OFType;
+import org.projectfloodlight.openflow.types.EthType;
+import org.projectfloodlight.openflow.types.IPv4Address;
+import org.projectfloodlight.openflow.types.IpProtocol;
 
 import net.floodlightcontroller.core.FloodlightContext;
 import net.floodlightcontroller.core.IOFMessageListener;
@@ -18,6 +21,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.Set;
 import net.floodlightcontroller.packet.Ethernet;
+import net.floodlightcontroller.packet.IPv4;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,13 +95,34 @@ public class InfoPrinter implements IOFMessageListener, IFloodlightModule {
 	@Override
 	public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 		// TODO Auto-generated method stub
-		Ethernet eth = IFloodlightProviderService.bcStore.get(cntx,IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
-		Long sourceMACHash = eth.getSourceMACAddress().getLong();
-		if(!macAddresses.contains(sourceMACHash)) {
-			macAddresses.add(sourceMACHash);
-			String sma = eth.getSourceMACAddress().toString();
-			String sid = sw.getId().toString();
-			System.out.println("MAC: " + sma + " seen on switch: " + sid);
+		String switch_id = sw.getId().toString();
+		String[] switch_id_parts = switch_id.split(":");
+		switch_id = switch_id_parts[switch_id_parts.length - 1];
+		if (switch_id.equalsIgnoreCase("01")) {
+			Ethernet eth = IFloodlightProviderService.bcStore.get(cntx,IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
+			EthType etherType = eth.getEtherType();
+			if (etherType == EthType.IPv4) {
+				IPv4 ipv4 = (IPv4) eth.getPayload();
+				IPv4Address srcip = ipv4.getSourceAddress();
+				IPv4Address dstip = ipv4.getDestinationAddress();
+				String protocol = "";
+				if (ipv4.getProtocol()  == IpProtocol.TCP) protocol = "TCP";
+				else protocol = "UDP";
+				
+				System.out.println("IP packet passed on switch 1 :");
+				System.out.println("source IP: " + srcip.toString());
+				System.out.println("destination IP: " + dstip.toString());
+				System.out.println("Transport protocol: " + protocol);
+						
+			} else if(etherType == EthType.ARP) {
+				String sourceMACHash = eth.getSourceMACAddress().toString();
+				String destinationMACHash = eth.getDestinationMACAddress().toString();
+				
+				System.out.println("ARP packet passed on switch 1 :");
+				System.out.println("source MAC: " + sourceMACHash);
+				System.out.println("destination MAC: " + destinationMACHash);
+				
+			}
 		}
 		return Command.CONTINUE;
 	}
