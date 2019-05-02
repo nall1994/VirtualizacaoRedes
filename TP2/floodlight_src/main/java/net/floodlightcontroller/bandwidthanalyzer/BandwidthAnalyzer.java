@@ -17,9 +17,13 @@ import net.floodlightcontroller.core.module.FloodlightModuleContext;
 import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
 import net.floodlightcontroller.core.module.IFloodlightService;
+import net.floodlightcontroller.core.types.NodePortTuple;
+import net.floodlightcontroller.statistics.IStatisticsService;
+import net.floodlightcontroller.statistics.SwitchPortBandwidth;
 
 public class BandwidthAnalyzer implements IOFMessageListener, IFloodlightModule {
 	protected IFloodlightProviderService floodlightProvider;
+	protected IStatisticsService statsProvider;
 	protected static Logger logger;
 
 	@Override
@@ -61,19 +65,31 @@ public class BandwidthAnalyzer implements IOFMessageListener, IFloodlightModule 
 	@Override
 	public void init(FloodlightModuleContext context) throws FloodlightModuleException {
 		floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
+		statsProvider = context.getServiceImpl(IStatisticsService.class);
 		logger = LoggerFactory.getLogger(BandwidthAnalyzer.class);
 	}
 
 	@Override
 	public void startUp(FloodlightModuleContext context) throws FloodlightModuleException {
-		// TODO Auto-generated method stub
+		floodlightProvider.addOFMessageListener(OFType.PACKET_IN,this);
 
 	}
 
 	@Override
 	public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<NodePortTuple,SwitchPortBandwidth> statsMap = statsProvider.getBandwidthConsumption();
+		for(Map.Entry<NodePortTuple, SwitchPortBandwidth> entry : statsMap.entrySet()) {
+			System.out.println("ENTRY:");
+			System.out.println("Node Port Tuple: ");
+			System.out.println("Node: " + entry.getKey().getNodeId().toString());
+			System.out.println("Port: " + entry.getKey().getPortId().toString());
+			System.out.println("SwitchPortBandwidth: ");
+			System.out.println("Switch: " + entry.getValue().getSwitchId().toString());
+			System.out.println("Port: " + entry.getValue().getSwitchPort().toString());
+			System.out.println("Bandwidth: " + entry.getValue().getLinkSpeedBitsPerSec().getValue());
+		}
+		
+		return Command.CONTINUE;
 	}
 
 }
