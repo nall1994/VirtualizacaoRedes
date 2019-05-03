@@ -32,3 +32,4 @@ net.floodlightcontroller.cpanalyzer.CPAnalyzer
 net.floodlightcontroller.hasupport.HAController
 net.floodlightcontroller.infoprinter.InfoPrinter
 net.floodlightcontroller.bandwidthanalyzer.BandwidthAnalyzer
+net.floodlightcontroller.anycastaddresser.AnycastAddresser
