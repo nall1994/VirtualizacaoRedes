@@ -1,11 +1,12 @@
 from mininet.topo import Topo
+from mininet.link import Link
 
-class MyTopo(topo):
+class MyTopo(Topo):
 
     def build(self):
 
-        # Numeração dos switches vai de cima para baixo, da esquerda para a direita.
-        # Switches
+        #Numeração dos switches vai de cima para baixo, da esquerda para a direita.
+        #Switches
         switch1 = self.addSwitch('s1')
         switch2 = self.addSwitch('s2')
         switch3 = self.addSwitch('s3')
