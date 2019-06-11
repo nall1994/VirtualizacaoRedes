@@ -1,3 +1,4 @@
+# coding=utf-8
 from mininet.topo import Topo
 from mininet.link import Link
 from mininet.node import Host,Switch

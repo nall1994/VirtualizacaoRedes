@@ -1,14 +1,17 @@
 # coding=utf-8
-
 from mininet.topo import Topo
 from mininet.link import Link
+from mininet.node import Node
+from mininet.node import Host
+from mininet.node import Switch
+from mininet.link import Intf
 
 class MyTopo(Topo):
 
     def build(self):
 
-        # Numeração dos switches vai de cima para baixo, da esquerda para a direita.
-        # Switches
+        #Numeração dos switches vai de cima para baixo, da esquerda para a direita.
+        #Switches
         switch1 = self.addSwitch('s1')
         switch2 = self.addSwitch('s2')
         switch3 = self.addSwitch('s3')
@@ -20,12 +23,14 @@ class MyTopo(Topo):
         switch9 = self.addSwitch('s9')
 
         #Hosts (clientes, file servers e dns servers)
-        file_server1 = self.addHost('f1',ip='10.0.0.10', mac='00:00:00:00:00:10')
-        file_server2 = self.addHost('f2',ip='10.0.0.11', mac='00:00:00:00:00:11')
-        dns_server1 = self.addHost('d1',ip='10.0.0.20', mac='00:00:00:00:00:20')
-        dns_server2 = self.addHost('d2',ip='10.0.0.21', mac='00:00:00:00:00:21')
-        client1 = self.addHost('c1',ip='10.0.0.30', mac='00:00:00:00:00:30')
-        client2 = self.addHost('c2',ip='10.0.0.31', mac='00:00:00:00:00:31')
+       
+
+        client1 = self.addHost('c1',ip='10.0.0.14',mac='00:00:00:01:01:01')
+        client2 = self.addHost('c2', ip='10.0.0.15',mac='00:00:00:01:01:02')
+        file_server1 = self.addHost('f1',ip='10.0.0.10', mac='00:00:00:00:00:01')
+        file_server2 = self.addHost('f2',ip='10.0.0.11', mac='00:00:00:00:00:03')
+        dns_server1 = self.addHost('d1',ip='10.0.0.20', mac='00:00:00:00:01:01')
+        dns_server2 = self.addHost('d2',ip='10.0.0.21', mac='00:00:00:00:01:03')
 
         #Links 
         self.addLink(file_server1, switch1)
