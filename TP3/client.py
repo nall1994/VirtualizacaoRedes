@@ -27,14 +27,22 @@ def mainmenu():
             print("A escolha tem que ser um número inteiro entre 1 e 3 inclusive.")
 
 def list_files():
+    recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
+    recv_socket.bind(('',10002))
     sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
     message = {
         "type" : "LIST_FILES"
     }
     message = json.dumps(message).encode('utf8')
-    sending_socket.sendto(message,('''ipAnycast''', 10002))
-    # Receber a informação da listagem de ficheiros e imprimir no ecrã.
-    # É preciso fazer json.loads(message.decode('utf8'))
+    sending_socket.sendto(message,('10.0.0.250', 10002))
+    listing,address = recv_socket.recv_from(20000)
+    listing = json.loads(listing.decode('utf8'))
+    files = listing.files
+    print('----- Lista de ficheiros -----\n')
+    i = 1
+    for file in files:
+        print(str(i) + ' - ' + file)
+        i += 1
 
 def file_request():
     sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
@@ -44,6 +52,16 @@ def file_request():
         "file_name" : file_name
     }
     message = json.dumps(message).encode('utf8')
-    sending_socket.sendto(message,('''ipAnycast''', 10002))
-    #enviar mensagem
+    sending_socket.sendto(message,('10.0.0.250', 10002))
+    recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
+    recv_socket.bind(('',10002))
+    file,address = recv_socket.recv_from(100000)
+    file = json.loads(file.decode('utf8'))
+    if file.content == 'No file found!':
+        print('O ficheiro não existe')
+    else:
+        local_file = open(file_name,'w')
+        local_file.write(file.content)
+        local_file.close()
+        print('O ficheiro ' + file_name + ' foi guardado com sucesso!')
 
