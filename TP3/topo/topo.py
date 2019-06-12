@@ -60,7 +60,7 @@ def runMyTopo():
 
     net = Mininet(
         topo = topo,
-        controller = lambda name: RemoteController(name,ip='127.0.0.1')
+        controller = lambda name: RemoteController(name,ip='172.17.0.1')
     )
 
     fs1 = net.get('f1')

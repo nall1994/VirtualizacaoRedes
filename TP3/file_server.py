@@ -61,14 +61,15 @@ class FileServer:
             recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
             recv_socket.bind(('',10001))
             message, address = recv_socket.recvfrom(4096)
+            message = message.decode('utf8')
             if message == "LOAD_REQUEST":
                 server_load = self.calculate_server_load
-                info_to_return = {
-                    "server_load": server_load
-                }
-                info_to_return = json.dumps(info_to_return).encode('utf8')
+                #info_to_return = {
+                #    "server_load": server_load
+                #}
+                #info_to_return = json.dumps(info_to_return).encode('utf8')
                 sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
-                sending_socket.sendto(info_to_return,(address[0],address[1]))
+                sending_socket.sendto(info_to_return.encode('utf8'),(address[0],10001))
             else:
                 pass
 
