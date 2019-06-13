@@ -100,14 +100,18 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 				if(ipv4.getDestinationAddress().toString().equals("10.0.0.250")) {
 					float server_1_load = load_monitor.get_server_load("f1");
 					float server_2_load = load_monitor.get_server_load("f2");
+					System.out.println("LOAD_SERVER_1: " + server_1_load);
+					System.out.println("LOAD_SERVER_2: " + server_2_load);
 					Ethernet eth2 = (Ethernet) eth.clone();
 					IPv4 ipv4_2 = (IPv4) ipv4.clone();
 					if(server_1_load < server_2_load) {
 						// Enviar pacote com o endereço MAC do servidor 1
-						eth2.setDestinationMACAddress("00:00:00:00:00:02");	
+						eth2.setDestinationMACAddress("00:00:00:00:00:02");
+						System.out.println("Sending packet to server 1");
 					} else {
 						// Enviar pacote com o endereço MAC do servidor 2
 						eth2.setDestinationMACAddress("00:00:00:00:00:04");
+						System.out.println("Sending packet to server 2");
 					}
 					ipv4_2.setDestinationAddress("10.0.0.250");
 					eth2.setPayload(ipv4_2);
@@ -126,12 +130,15 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 					// SE OS IPS DOS CLIENTES NAO DEREM, UTILIZAR OS MACS.
 					Ethernet eth2 = (Ethernet) eth.clone();
 					IPv4 ipv4_2 = (IPv4) ipv4.clone();
+					System.out.println("Last DNS server used: " + last_dns_server);
 					if(last_dns_server == "d1") {
 						//Enviar para d2
 						eth2.setDestinationMACAddress("00:00:00:00:01:04");
+						System.out.println("Sending packet to DNS server 2.");
 					} else {
 						//Enviar para d1
 						eth2.setDestinationMACAddress("00:00:00:00:01:02");
+						System.out.println("Sending packet to DNS server 1.");
 					}
 					ipv4_2.setDestinationAddress("10.0.0.251");
 					eth2.setPayload(ipv4_2);
@@ -149,6 +156,7 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 					IPv4 ipv4_2 = (IPv4) ipv4.clone();
 					eth2.setDestinationMACAddress("00:00:00:00:01:02");
 					ipv4_2.setDestinationAddress("10.0.0.251");
+					System.out.println("Client 2 asked. Sending packet for primary DNS server.");
 					eth2.setPayload(ipv4_2);
 					byte[] serialized = eth2.serialize();
 					OFPacketOut pout = sw.getOFFactory().buildPacketOut()
@@ -167,7 +175,7 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 					ARP arp_2 = new ARP();
 					eth2.setSourceMACAddress(MacAddress.of("ff:ff:ff:ff:ff:ff"));
 					arp_2.setSenderHardwareAddress(MacAddress.of("ff:ff:ff:ff:ff:ff"));
-					
+					System.out.println("ARP packet arrived! reassigning addresses");
 					eth2.setDestinationMACAddress(arp.getSenderHardwareAddress());
 					eth2.setEtherType(EthType.ARP);
 					arp_2.setProtocolType(ARP.PROTO_TYPE_IP);

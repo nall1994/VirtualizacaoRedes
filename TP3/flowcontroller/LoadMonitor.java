@@ -30,28 +30,34 @@ public class LoadMonitor extends Thread {
 		byte[] buf_receive = new byte[256];
 		String message = "LOAD_REQUEST";
 		buf = message.getBytes();
-		try {
-			InetAddress server_1_address = InetAddress.getByName("10.0.0.10");
-			InetAddress server_2_address = InetAddress.getByName("10.0.0.11");
-			DatagramPacket packet_1 = new DatagramPacket(buf,buf.length,server_1_address,10001);
-			DatagramPacket packet_2 = new DatagramPacket(buf,buf.length,server_2_address,10001);
-			socket.send(packet_1);
-			packet_1 = new DatagramPacket(buf_receive,buf_receive.length);
-			socket.receive(packet_1);
-			socket.send(packet_2);
-			packet_2 = new DatagramPacket(buf_receive,buf_receive.length);
-			socket.receive(packet_2);
-			String value_1 = new String(packet_1.getData(), 0, packet_1.getLength());
-			String value_2 = new String(packet_2.getData(), 0, packet_2.getLength());
-			set_server_load("f1", Float.parseFloat(value_1));
-			set_server_load("f2", Float.parseFloat(value_2));
-		} catch (java.net.UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
+		while(true) {
+			try {
+				InetAddress server_1_address = InetAddress.getByName("10.0.0.10");
+				InetAddress server_2_address = InetAddress.getByName("10.0.0.11");
+				DatagramPacket packet_1 = new DatagramPacket(buf,buf.length,server_1_address,10001);
+				DatagramPacket packet_2 = new DatagramPacket(buf,buf.length,server_2_address,10001);
+				socket.send(packet_1);
+				packet_1 = new DatagramPacket(buf_receive,buf_receive.length);
+				socket.receive(packet_1);
+				socket.send(packet_2);
+				packet_2 = new DatagramPacket(buf_receive,buf_receive.length);
+				socket.receive(packet_2);
+				String value_1 = new String(packet_1.getData(), 0, packet_1.getLength());
+				String value_2 = new String(packet_2.getData(), 0, packet_2.getLength());
+				set_server_load("f1", Float.parseFloat(value_1));
+				set_server_load("f2", Float.parseFloat(value_2));
+			} catch (java.net.UnknownHostException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(5000);
+			} catch(InterruptedException ie) {
+				ie.printStackTrace();
+			}
+			
+		}		
 		
 	}
 	
