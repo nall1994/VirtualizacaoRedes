@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import socket
 import json
 import psutil
@@ -9,21 +11,24 @@ class FileServer:
 
     def __init__(self):
         self.known_files = dict() # Dicionário que mapeia nome_ficheiro -> path para o ficheiro (no servidor)
+        self.known_files["ex1"] = "filesystem/ex1.txt"
+        self.known_files["ex2"] = "filesystem/ex2.txt"
         self.server_load = 0.0 # métrica que faz uma média entre cpu e ram utilizada. 50% de interesse para cada valor.
 
     def listen_request(self):
         recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
         recv_socket.bind(('',10002))
         sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
-        message, address = recv_socket.recvfrom(4096)
-        message = json.loads(message.decode('utf8'))
-        if message["type"] == "LIST_FILES":
-            files_list = self.list_known_files()
-            sending_socket.sendto(files_list,(address[0],10002))
-        elif message["type"] == "FILE_REQUEST":
-            file_name = message["file_name"]
-            file_to_send = self.file_request(file_name)
-            sending_socket.sendto(file_to_send,10002)
+        while True:
+            message, address = recv_socket.recvfrom(4096)
+            message = json.loads(message.decode('utf8'))
+            if message["type"] == "LIST_FILES":
+                files_list = self.list_known_files()
+                sending_socket.sendto(files_list,(address[0],10002))
+            elif message["type"] == "FILE_REQUEST":
+                file_name = message["file_name"]
+                file_to_send = self.file_request(file_name)
+                sending_socket.sendto(file_to_send,(address[0],10002))
 
     def list_known_files(self):
         files_array = []
@@ -49,6 +54,20 @@ class FileServer:
             info_to_return = json.dumps(info_to_return).encode('utf8')
         return info_to_return
     
+    def uploads_listener(self):
+        recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
+        recv_socket.bind(('',10003))
+        while True:
+            message, address = recv_socket.recvfrom(100000)
+            message = json.loads(message.decode('utf8'))
+            if message["type"] == "FILE_UPLOAD":
+                file_name = message["file_name"]
+                file_content = message["content"]
+                file_path = 'filesystem/' + file_name
+                file_to_write = open(file_path, 'w')
+                file_to_write.write(file_content)
+
+    
     def calculate_server_load(self):
         cpu_percent = psutil.cpu_percent()
         ram_stats = psutil.virtual_memory()
@@ -61,20 +80,21 @@ class FileServer:
             recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
             recv_socket.bind(('',10001))
             message, address = recv_socket.recvfrom(4096)
+            print('RECEIVED')
             message = message.decode('utf8')
             if message == "LOAD_REQUEST":
-                server_load = self.calculate_server_load
-                #info_to_return = {
-                #    "server_load": server_load
-                #}
-                #info_to_return = json.dumps(info_to_return).encode('utf8')
+                server_load = self.calculate_server_load()
                 sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
                 sending_socket.sendto(info_to_return.encode('utf8'),(address[0],10001))
+                print(address[0])
+                print("SENT")
             else:
                 pass
 
 file_server = FileServer()
 server_load_thread = Thread(target=file_server.listen_load_updates)
 requests_thread = Thread(target=file_server.listen_request)
+uploads_thread = Thread(target=file_server.uploads_listener)
 server_load_thread.start()
 requests_thread.start()
+uploads_thread.start()

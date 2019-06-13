@@ -90,84 +90,90 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 
 	@Override
 	public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
-		// PÕR PRINTS NAS ACÇÕES EFETUADAS PARA SABER O QUE ESTÁ A SER FEITO.
+		//mandar pacotes para servidores para ver a carga.
 		switch(msg.getType()) {
 			
 		case PACKET_IN:
 			Ethernet eth = IFloodlightProviderService.bcStore.get(cntx,IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 			if(eth.getEtherType() == EthType.IPv4) {
 				IPv4 ipv4 = (IPv4) eth.getPayload();
-				if(ipv4.getDestinationAddress().toString().equals("10.0.0.250")) {
-					float server_1_load = load_monitor.get_server_load("f1");
-					float server_2_load = load_monitor.get_server_load("f2");
-					System.out.println("LOAD_SERVER_1: " + server_1_load);
-					System.out.println("LOAD_SERVER_2: " + server_2_load);
-					Ethernet eth2 = (Ethernet) eth.clone();
-					IPv4 ipv4_2 = (IPv4) ipv4.clone();
-					if(server_1_load < server_2_load) {
-						// Enviar pacote com o endereço MAC do servidor 1
-						eth2.setDestinationMACAddress("00:00:00:00:00:02");
-						System.out.println("Sending packet to server 1");
-					} else {
-						// Enviar pacote com o endereço MAC do servidor 2
-						eth2.setDestinationMACAddress("00:00:00:00:00:04");
-						System.out.println("Sending packet to server 2");
+				if((eth.getSourceMACAddress().toString().equals("00:00:00:01:01:01") || eth.getSourceMACAddress().toString().equals("00:00:00:01:01:02")) && eth.getDestinationMACAddress().toString().equals("ff:ff:ff:ff:ff:ff")) {
+					if(ipv4.getDestinationAddress().toString().equals("10.0.0.250")) {
+						float server_1_load = load_monitor.get_server_load("f1");
+						float server_2_load = load_monitor.get_server_load("f2");
+						Ethernet eth2 = (Ethernet) eth.clone();
+						IPv4 ipv4_2 = (IPv4) ipv4.clone();
+						if(server_1_load < server_2_load) {
+							// Enviar pacote com o endereço MAC do servidor 1
+							eth2.setDestinationMACAddress("00:00:00:00:00:02");
+							System.out.println("Sending packet to server 1");
+						} else {
+							// Enviar pacote com o endereço MAC do servidor 2
+							eth2.setDestinationMACAddress("00:00:00:00:00:04");
+							System.out.println("Sending packet to server 2");
+						}
+						ipv4_2.setDestinationAddress("10.0.0.250");
+						eth2.setPayload(ipv4_2);
+						byte[] serialized = eth2.serialize();
+						OFPacketOut pout = sw.getOFFactory().buildPacketOut()
+															.setData(serialized)
+															.setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
+															.setInPort(OFPort.CONTROLLER)
+															.build();
+						sw.write(pout);
+						return Command.STOP;
+																	
+						
 					}
-					ipv4_2.setDestinationAddress("10.0.0.250");
-					eth2.setPayload(ipv4_2);
-					byte[] serialized = eth2.serialize();
-					OFPacketOut pout = sw.getOFFactory().buildPacketOut()
-														.setData(serialized)
-														.setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
-														.setInPort(OFPort.CONTROLLER)
-														.build();
-					sw.write(pout);
-					return Command.STOP;
-																
-					
-				}
-				if(ipv4.getDestinationAddress().toString().equals("10.0.0.251") && ipv4.getSourceAddress().toString().equals("10.0.0.14")) {
-					// SE OS IPS DOS CLIENTES NAO DEREM, UTILIZAR OS MACS.
-					Ethernet eth2 = (Ethernet) eth.clone();
-					IPv4 ipv4_2 = (IPv4) ipv4.clone();
-					System.out.println("Last DNS server used: " + last_dns_server);
-					if(last_dns_server == "d1") {
-						//Enviar para d2
-						eth2.setDestinationMACAddress("00:00:00:00:01:04");
-						System.out.println("Sending packet to DNS server 2.");
-					} else {
-						//Enviar para d1
+					if(ipv4.getDestinationAddress().toString().equals("10.0.0.251") && ipv4.getSourceAddress().toString().equals("10.0.0.14")) {
+						// SE OS IPS DOS CLIENTES NAO DEREM, UTILIZAR OS MACS.
+						Ethernet eth2 = (Ethernet) eth.clone();
+						IPv4 ipv4_2 = (IPv4) ipv4.clone();
+						System.out.println("Last DNS server used: " + last_dns_server);
+						if(last_dns_server == "d1") {
+							//Enviar para d2
+							eth2.setDestinationMACAddress("00:00:00:00:01:04");
+							last_dns_server = "d2";
+							System.out.println("Sending packet to DNS server 2.");
+						} else {
+							//Enviar para d1
+							eth2.setDestinationMACAddress("00:00:00:00:01:02");
+							last_dns_server = "d1";
+							System.out.println("Sending packet to DNS server 1.");
+						}
+						ipv4_2.setDestinationAddress("10.0.0.251");
+						eth2.setPayload(ipv4_2);
+						byte[] serialized = eth2.serialize();
+						OFPacketOut pout = sw.getOFFactory().buildPacketOut()
+														 .setData(serialized)
+														 .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
+														 .setInPort(OFPort.CONTROLLER)
+														 .build();
+						
+						sw.write(pout);
+						return Command.STOP;
+					} else if(ipv4.getDestinationAddress().toString().equals("10.0.0.251") && ipv4.getSourceAddress().toString().equals("10.0.0.15")) {
+						Ethernet eth2 = (Ethernet) eth.clone();
+						IPv4 ipv4_2 = (IPv4) ipv4.clone();
 						eth2.setDestinationMACAddress("00:00:00:00:01:02");
-						System.out.println("Sending packet to DNS server 1.");
+						ipv4_2.setDestinationAddress("10.0.0.251");
+						System.out.println("Client 2 asked. Sending packet for primary DNS server.");
+						eth2.setPayload(ipv4_2);
+						byte[] serialized = eth2.serialize();
+						OFPacketOut pout = sw.getOFFactory().buildPacketOut()
+														 .setData(serialized)
+														 .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
+														 .setInPort(OFPort.CONTROLLER)
+														 .build();
+						
+						sw.write(pout);
+						return Command.STOP;
+					} else {
+						System.out.println(ipv4.getSourceAddress().toString());
+						System.out.println(ipv4.getDestinationAddress().toString());
 					}
-					ipv4_2.setDestinationAddress("10.0.0.251");
-					eth2.setPayload(ipv4_2);
-					byte[] serialized = eth2.serialize();
-					OFPacketOut pout = sw.getOFFactory().buildPacketOut()
-													 .setData(serialized)
-													 .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
-													 .setInPort(OFPort.CONTROLLER)
-													 .build();
-					
-					sw.write(pout);
-					return Command.STOP;
-				} else if(ipv4.getDestinationAddress().toString().equals("10.0.0.251") && ipv4.getSourceAddress().toString().equals("10.0.0.15")) {
-					Ethernet eth2 = (Ethernet) eth.clone();
-					IPv4 ipv4_2 = (IPv4) ipv4.clone();
-					eth2.setDestinationMACAddress("00:00:00:00:01:02");
-					ipv4_2.setDestinationAddress("10.0.0.251");
-					System.out.println("Client 2 asked. Sending packet for primary DNS server.");
-					eth2.setPayload(ipv4_2);
-					byte[] serialized = eth2.serialize();
-					OFPacketOut pout = sw.getOFFactory().buildPacketOut()
-													 .setData(serialized)
-													 .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.FLOOD,0xffFFffFF)))
-													 .setInPort(OFPort.CONTROLLER)
-													 .build();
-					
-					sw.write(pout);
-					return Command.STOP;
 				}
+				
 			} else if(eth.getEtherType() == EthType.ARP) {
 				ARP arp = (ARP) eth.getPayload();
 				if((arp.getTargetProtocolAddress().toString().equals("10.0.0.250") || arp.getTargetProtocolAddress().toString().equals("10.0.0.251")) && arp.getOpCode().toString().equals("1")) {

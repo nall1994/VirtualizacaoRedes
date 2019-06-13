@@ -13,3 +13,6 @@ services:
      - /tmp/.X11-unix:/tmp/.X11-unix
      - /lib/modules:/lib/modules
      - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/topo:/home/topo
+     - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/clients:/home/clients
+     - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/dns_conf:/home/dns_conf
+     - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/file_servers:/home/file_servers

@@ -4,9 +4,9 @@ zone "grupo5.example.com"{
 	masters { 10.0.0.20; };             #dns1 private IP address
 };
 
-#private subnets
-#zone "0.10.in-addr.arpa"{
-	#type slave;
-	#file"slaves/db.0.10";
-	#allow-transfer { 10.0.0.20; };
-#};
+
+zone "0.10.in-addr.arpa"{
+	type slave;
+	file"slaves/db.0.10";
+	allow-transfer { 10.0.0.20; };
+};

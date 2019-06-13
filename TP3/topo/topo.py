@@ -44,6 +44,7 @@ class MyTopo(Topo):
         self.addLink(switch3,dns_server1) # interface unycast
         self.addLink(switch3,dns_server1) #interface anycast (configurada posteriormente)
         self.addLink(switch4,switch5)
+        self.addLink(switch4,switch7)
         self.addLink(switch5,switch6)
         self.addLink(switch5,switch8)
         self.addLink(switch6,switch9)
