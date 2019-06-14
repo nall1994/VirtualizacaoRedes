@@ -1,1 +1,1 @@
-cp dns_conf/secundary/* /etc/bind/
+cp -r ../dns_conf/secundary/* /etc/bind/
