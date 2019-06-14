@@ -53,12 +53,13 @@ def list_files():
 
 def file_upload():
     sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
-    file_path = raw_input("Insira o caminho do ficheiro que pretende enviar para o servidor")
+    file_path = raw_input("Insira o caminho do ficheiro que pretende enviar para o servidor: ")
     if os.path.isfile(file_path):
         file = open(file_path,"r")
         content = file.read()
         file_path_parts = file_path.split('/')
-        file_name = file_path_parts[len(file_path_parts) - 1]
+        file_name_with_extension = file_path_parts[len(file_path_parts) - 1].split('.')
+        file_name = file_name_with_extension[0]
         message = {
             "type" : "FILE_UPLOAD",
             "file_name" : file_name,

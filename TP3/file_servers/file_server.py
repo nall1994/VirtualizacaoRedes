@@ -64,6 +64,7 @@ class FileServer:
                 file_name = message["file_name"]
                 file_content = message["content"]
                 file_path = 'filesystem/' + file_name
+                self.known_files[file_name] = file_path
                 file_to_write = open(file_path, 'w')
                 file_to_write.write(file_content)
 

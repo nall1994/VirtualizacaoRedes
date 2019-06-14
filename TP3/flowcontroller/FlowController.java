@@ -126,7 +126,6 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 						
 					}
 					if(ipv4.getDestinationAddress().toString().equals("10.0.0.251") && ipv4.getSourceAddress().toString().equals("10.0.0.14")) {
-						// SE OS IPS DOS CLIENTES NAO DEREM, UTILIZAR OS MACS.
 						Ethernet eth2 = (Ethernet) eth.clone();
 						IPv4 ipv4_2 = (IPv4) ipv4.clone();
 						System.out.println("Last DNS server used: " + last_dns_server);
