@@ -1,0 +1,1 @@
+cp dns_conf/secundary/* /etc/bind/

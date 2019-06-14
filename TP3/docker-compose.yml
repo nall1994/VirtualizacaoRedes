@@ -16,3 +16,4 @@ services:
      - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/clients:/home/clients
      - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/dns_conf:/home/dns_conf
      - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/file_servers:/home/file_servers
+     - ~/Desktop/Universidade/VirtualizacaoRedes/TP3/conf_scripts:/home/conf_scripts
