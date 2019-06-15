@@ -30,6 +30,7 @@ class MyTopo(Topo):
         file_server2 = self.addHost('f2',ip='10.0.0.11', mac='00:00:00:00:00:03')
         dns_server1 = self.addHost('d1',ip='10.0.0.20', mac='00:00:00:00:01:01')
         dns_server2 = self.addHost('d2',ip='10.0.0.21', mac='00:00:00:00:01:03')
+        load_listener = self.addHost('l', ip='10.0.0.50',mac='00:00:00:01:01:03')
 
         #Links 
         self.addLink(file_server1, switch1) # interface unycast
@@ -54,6 +55,7 @@ class MyTopo(Topo):
         self.addLink(switch8,switch9)
         self.addLink(client1,switch2)
         self.addLink(client2,switch9)
+        self.addLink(load_listener,switch8)
 
 def runMyTopo():
 

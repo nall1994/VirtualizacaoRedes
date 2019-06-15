@@ -1,5 +1,6 @@
 package net.floodlightcontroller.flowcontroller;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,8 +26,10 @@ import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
 import net.floodlightcontroller.core.module.IFloodlightService;
 import net.floodlightcontroller.packet.ARP;
+import net.floodlightcontroller.packet.Data;
 import net.floodlightcontroller.packet.Ethernet;
 import net.floodlightcontroller.packet.IPv4;
+import net.floodlightcontroller.packet.UDP;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +37,8 @@ import org.slf4j.LoggerFactory;
 public class FlowController implements IOFMessageListener, IFloodlightModule {
 	protected IFloodlightProviderService floodlightProvider;
 	protected static Logger logger;
-	protected LoadMonitor load_monitor;
+	protected float server_1_load;
+	protected float server_2_load;
 	protected String last_dns_server = "d2";
 
 	@Override
@@ -77,8 +81,8 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 	public void init(FloodlightModuleContext context) throws FloodlightModuleException {
 		floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 		logger = LoggerFactory.getLogger(FlowController.class);
-		load_monitor = new LoadMonitor();
-		load_monitor.start();
+		server_1_load = 0.0f;
+		server_2_load = 0.0f;
 		
 	}
 
@@ -97,20 +101,38 @@ public class FlowController implements IOFMessageListener, IFloodlightModule {
 			Ethernet eth = IFloodlightProviderService.bcStore.get(cntx,IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 			if(eth.getEtherType() == EthType.IPv4) {
 				IPv4 ipv4 = (IPv4) eth.getPayload();
+				if(ipv4.getDestinationAddress().toString().equals("10.0.0.50")) {
+					if(eth.getSourceMACAddress().toString().equals("00:00:00:00:00:01") || eth.getSourceMACAddress().toString().equals("00:00:00:00:00:02")) {
+						// Carga do servidor 1
+						UDP udp = (UDP) ipv4.getPayload();
+						Data server_1_data = (Data) udp.getPayload();
+						byte[] server_1_bytes = server_1_data.getData();
+						ByteBuffer buffer = ByteBuffer.wrap(server_1_bytes);
+						server_1_load = buffer.getFloat();
+					} else if(eth.getSourceMACAddress().toString().equals("00:00:00:00:00:03") || eth.getSourceMACAddress().toString().equals("00:00:00:00:00:04")) {
+						// Carga do servidor 2
+						UDP udp = (UDP) ipv4.getPayload();
+						Data server_2_data = (Data) udp.getPayload();
+						byte[] server_2_bytes = server_2_data.getData();
+						ByteBuffer buffer = ByteBuffer.wrap(server_2_bytes);
+						server_2_load = buffer.getFloat();
+					}
+					return Command.STOP;
+				}
 				if((eth.getSourceMACAddress().toString().equals("00:00:00:01:01:01") || eth.getSourceMACAddress().toString().equals("00:00:00:01:01:02")) && eth.getDestinationMACAddress().toString().equals("ff:ff:ff:ff:ff:ff")) {
 					if(ipv4.getDestinationAddress().toString().equals("10.0.0.250")) {
-						float server_1_load = load_monitor.get_server_load("f1");
-						float server_2_load = load_monitor.get_server_load("f2");
 						Ethernet eth2 = (Ethernet) eth.clone();
 						IPv4 ipv4_2 = (IPv4) ipv4.clone();
 						if(server_1_load < server_2_load) {
 							// Enviar pacote com o endereço MAC do servidor 1
 							eth2.setDestinationMACAddress("00:00:00:00:00:02");
 							System.out.println("Sending packet to server 1");
+							System.out.println("1 - " + server_1_load + " vs. 2 - " + server_2_load);
 						} else {
 							// Enviar pacote com o endereço MAC do servidor 2
 							eth2.setDestinationMACAddress("00:00:00:00:00:04");
 							System.out.println("Sending packet to server 2");
+							System.out.println("1 - " + server_1_load + " vs. 2 - " + server_2_load);
 						}
 						ipv4_2.setDestinationAddress("10.0.0.250");
 						eth2.setPayload(ipv4_2);

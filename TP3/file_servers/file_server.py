@@ -76,24 +76,15 @@ class FileServer:
         server_load = cpu_percent * 0.5 + ram_percent * 0.5
         return server_load
 
-    def listen_load_updates(self):
+    def send_load_updates(self):
         while True:
-            recv_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
-            recv_socket.bind(('',10001))
-            message, address = recv_socket.recvfrom(4096)
-            print('RECEIVED')
-            message = message.decode('utf8')
-            if message == "LOAD_REQUEST":
-                server_load = self.calculate_server_load()
-                sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
-                sending_socket.sendto(info_to_return.encode('utf8'),(address[0],10001))
-                print(address[0])
-                print("SENT")
-            else:
-                pass
-
+            sleep(5)
+            server_load = self.calculate_server_load()
+            sending_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM,socket.IPPROTO_UDP)
+            sending_socket.sendto(str(server_load),('10.0.0.50',10001))
+            
 file_server = FileServer()
-server_load_thread = Thread(target=file_server.listen_load_updates)
+server_load_thread = Thread(target=file_server.send_load_updates)
 requests_thread = Thread(target=file_server.listen_request)
 uploads_thread = Thread(target=file_server.uploads_listener)
 server_load_thread.start()
